@@ -10,18 +10,19 @@ object MihonLauncher {
 
     fun openInMihon(context: Context, readallcomicsUrl: String) {
         val uri = Uri.parse(readallcomicsUrl)
+        // Try each Mihon package directly — don't use resolveActivity,
+        // it returns null on Android 11+ even with <queries> declared
         for (pkg in MIHON_PACKAGES) {
             try {
                 val intent = Intent(Intent.ACTION_VIEW, uri).apply {
                     setPackage(pkg)
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
-                if (intent.resolveActivity(context.packageManager) != null) {
-                    context.startActivity(intent)
-                    return
-                }
+                context.startActivity(intent)
+                return
             } catch (_: Exception) { }
         }
+        // Fallback: browser
         try {
             context.startActivity(Intent(Intent.ACTION_VIEW, uri).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
             Toast.makeText(context, "Mihon not found — opened in browser", Toast.LENGTH_SHORT).show()
