@@ -1,0 +1,2 @@
+# Comicstack
+-keepattributes *Annotation*
